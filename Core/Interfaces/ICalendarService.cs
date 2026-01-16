@@ -12,4 +12,5 @@ public interface ICalendarService
     Task<IEnumerable<EventResponse>> GetAllEventsAsync();
     Task<EventResponse?> GetEventByIdAsync(Guid id);
     Task DeleteEventAsync(Guid id);
+    Task<EventResponse> UpdateEventAsync(Guid id, CreateEventRequest request, Guid currentVersion);
 }

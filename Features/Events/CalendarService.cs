@@ -1,5 +1,6 @@
 ﻿using Doctorly.Calendar.Core.Dtos;
 using Doctorly.Calendar.Core.Entities;
+using Doctorly.Calendar.Core.Exceptions;
 using Doctorly.Calendar.Core.Interfaces;
 using Doctorly.Calendar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +77,30 @@ public class CalendarService : ICalendarService
             _context.Events.Remove(ev);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<EventResponse> UpdateEventAsync(Guid id, CreateEventRequest request, Guid currentVersion)
+    {
+        var existingEvent = await _context.Events
+            .Include(e => e.Attendees)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (existingEvent == null) throw new KeyNotFoundException("Event not found.");
+
+        // Requirement: Concurrency Check
+        if (existingEvent.Version != currentVersion)
+        {
+            throw new DomainException("The event was modified by another user. Please refresh and try again.");
+        }
+
+        // Update logic
+        existingEvent.Title = request.Title;
+        existingEvent.SetSchedule(request.StartTime, request.EndTime);
+
+        // In a real app, we'd sync attendees here too.
+
+        await _context.SaveChangesAsync();
+        return MapToResponse(existingEvent);
     }
 
     /// <summary>
