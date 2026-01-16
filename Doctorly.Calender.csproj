@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Core\Dtos\EventDtos.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.23" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
@@ -16,6 +20,10 @@
     <Folder Include="Infrastructure\" />
     <Folder Include="Features\" />
     <Folder Include="Common\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Core\Dtos\EventDtos.cs" />
   </ItemGroup>
 
 </Project>
