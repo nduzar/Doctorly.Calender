@@ -1,6 +1,8 @@
 using Doctorly.Calendar.Core.Interfaces;
 using Doctorly.Calendar.Features.Events;
 using Doctorly.Calendar.Infrastructure.Data;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                       ?? "Data Source=DoctorlyCalendar.db"));
 
 builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateEventRequestValidator>();
 
 var app = builder.Build();
 
