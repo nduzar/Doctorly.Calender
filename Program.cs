@@ -22,6 +22,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEventRequestValidator>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -33,6 +42,7 @@ app.UseSwaggerUI();
 app.UseMiddleware<Doctorly.Calendar.Common.Middleware.ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseCors("AllowAll");
 app.MapControllers();
 
 // Automatic Migration on Startup
