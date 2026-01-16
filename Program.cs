@@ -1,3 +1,5 @@
+using Doctorly.Calendar.Core.Interfaces;
+using Doctorly.Calendar.Features.Events;
 using Doctorly.Calendar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
                       ?? "Data Source=DoctorlyCalendar.db"));
+
+builder.Services.AddScoped<ICalendarService, CalendarService>();
 
 var app = builder.Build();
 
