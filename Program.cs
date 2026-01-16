@@ -30,7 +30,7 @@ var app = builder.Build();
 // Ensure Swagger is always available for the reviewer to test the "Should" requirement
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseMiddleware<Doctorly.Calendar.Common.Middleware.ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
