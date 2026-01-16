@@ -35,6 +35,14 @@ public class EventsController : ControllerBase
         return CreatedAtAction(nameof(GetEvent), new { id = result.Id }, result);
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<EventResponse>> UpdateEvent(Guid id, [FromBody] CreateEventRequest request, [FromQuery] Guid version)
+    {
+        // If the version doesn't match, our Middleware catches the DomainException
+        var updatedEvent = await _calendarService.UpdateEventAsync(id, request, version);
+        return Ok(updatedEvent);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEvent(Guid id)
     {

@@ -87,19 +87,39 @@ public class CalendarService : ICalendarService
 
         if (existingEvent == null) throw new KeyNotFoundException("Event not found.");
 
-        // Requirement: Concurrency Check
+        // 1. Concurrency Check (Your existing logic - Perfect!)
         if (existingEvent.Version != currentVersion)
         {
             throw new DomainException("The event was modified by another user. Please refresh and try again.");
         }
 
-        // Update logic
+        // 2. Update Basic Fields
         existingEvent.Title = request.Title;
+        existingEvent.Description = request.Description ?? string.Empty; // Don't forget the description!
         existingEvent.SetSchedule(request.StartTime, request.EndTime);
 
-        // In a real app, we'd sync attendees here too.
+        // 3. Sync Attendees (The "Missing" Logic)
+        // We remove the old ones and add the new ones from the request
+        _context.Attendees.RemoveRange(existingEvent.Attendees);
 
+        if (request.Attendees != null)
+        {
+            foreach (var attendeeDto in request.Attendees)
+            {
+                existingEvent.AddAttendee(new Attendee
+                {
+                    Name = attendeeDto.Name,
+                    Email = attendeeDto.Email,
+                    IsAttending = attendeeDto.IsAttending
+                });
+            }
+        }
+
+        // 4. Save & Rotate Version
+        // Note: Since you're using a Guid for Version, ensure your Entity 
+        // updates the Version Guid during the SetSchedule or Save process.
         await _context.SaveChangesAsync();
+
         return MapToResponse(existingEvent);
     }
 
